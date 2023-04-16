@@ -5,6 +5,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <termios.h>
 
 #define	MAX_SIZE_CMD	256
 #define	MAX_SIZE_ARG	16
