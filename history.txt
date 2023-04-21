@@ -1,3 +1,17 @@
-help
-pwd
 ls
+ 
+pwd 
+ 
+help 
+ 
+help cd 
+ 
+jajaja  
+ 
+hello 
+ 
+help 
+ 
+help hitory  
+help history 
+exit 

@@ -161,19 +161,48 @@ int suchel_cd(char **args) {
 int suchel_help(char **args) {
 
     //read from help.txt
-    FILE *fp;
-    char str[1000];
-    fp = fopen("help.txt", "r");
-    if (fp== NULL){
-        printf("Could not open file");
-        return 0;
-    }
+    if (args[1]== NULL)
+    {
+        FILE *fp;
+        char str[1000];
+        fp = fopen("help.txt", "r");
+        if (fp== NULL){
+            printf("Could not open file");
+            return 0;
+        }
 
-    while (fgets(str,1000,fp) != NULL){
-        printf("%s", str);
+        while (fgets(str,1000,fp) != NULL){
+            printf("%s", str);
+        }
+        
+        fclose(fp);
     }
-    
-    fclose(fp);
+    else
+    {
+        char command[256];
+        strcpy(command, args[1]);
+
+        FILE *fp;
+        char str[1000];
+
+        //concat two strings 
+        char hh[24] = "h";
+        strcat(hh, command);
+        strcat(hh, ".txt");
+
+        fp = fopen(hh, "r");
+        if (fp== NULL){
+            printf("Could not open file");
+            return 0;
+        }
+
+        while (fgets(str,1000,fp) != NULL){
+            printf("%s", str);
+        }
+        
+        fclose(fp);
+
+    }
     return 1;
 
 }
@@ -367,7 +396,8 @@ int suchel_launch(char **args, char *inputFile, char *outputFile, int option) {
             RedirectAppendOutput(outputFile, fileDescriptor);
         }
 
-        if (execvp(args[0], args) == err) {
+        if (execvp(args[0], args) == err) 
+        {
             printf("err");
             kill(getpid(), SIGTERM);
             return -1;
@@ -518,14 +548,19 @@ int suchel_execute(char **args) {
         }
     }
 
+    
+    
+
     for (int i = 0; args[i] != NULL; i++) {
-        if (strcmp(args[i], "<") == 0 || strcmp(args[i], ">") == 0 || strcmp(args[i], "|") == 0 ||
-            strcmp(args[i], ">>") == 0)   {
+        if (strcmp(args[i], "<") == 0 || strcmp(args[i], ">") == 0 || strcmp(args[i], "|") == 0 || strcmp(args[i], ">>") == 0)   
+        {
             separators[numSeparators++] = args[i];
             commands[numCommands++] = NULL; // mark end of previous command
-        } else if (strcmp(args[i], "#") == 0) {
+        } else if (strcmp(args[i], "#") == 0) 
+        {
             break;
-        } else {
+        } else 
+        {
             commands[numCommands++] = args[i];
         }
     }
