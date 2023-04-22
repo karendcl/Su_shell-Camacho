@@ -1,3 +1,20 @@
-if pwd then ls else pwd end
-
-if pwd then ls else pwd end
+again 6
+ 
+history 
+ 
+history
+ 
+again 1
+ 
+history 
+ 
+history
+ 
+exit
+ 
+history
+ 
+echo jajajaj > hola.txt
+ 
+exit
+ 
