@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <ctype.h>
 
 #define TRUE 1
 #define FALSE !TRUE
@@ -121,6 +122,8 @@ int suchel_history(char **args);
 
 int suchel_again(char **args);
 
+int suchel_if(char **args);
+
 int suchel_execute(char **args);
 
 char *builtin_str[] = {
@@ -130,7 +133,8 @@ char *builtin_str[] = {
         "history",
         "again",
         "true",
-        "false"
+        "false",
+        "if"
 };
 
 int (*builtin_func[])(char **) = {
@@ -140,11 +144,59 @@ int (*builtin_func[])(char **) = {
         &suchel_history,
         &suchel_again,
         &suchel_true,
-        &suchel_false
+        &suchel_false,
+        &suchel_if
 };
 
 int suchel_num_builtins() {
     return sizeof(builtin_str) / sizeof(char *);
+}
+
+int suchel_if(char **args){
+    char *condition[1024];
+    char *then[1024];
+    char *elsee[1024];
+    int pointer = 0;
+    int k = 0;
+
+    for (int i = 0; i < sizeof(args); i++)
+    {
+        if (strcmp(args[i], "if") ==0) continue;
+        if (strcmp(args[i], "then") ==0) break;;
+        //condition[k] = args[i];
+        strcpy(condition[k], args[i]);
+        k++;
+        pointer = i;
+    }
+
+    k=0;
+
+    for (pointer; pointer < sizeof(args); pointer++)
+    {
+        if (strcmp(args[pointer], "then") ==0) continue;
+        if (strcmp(args[pointer], "else") ==0) break;;
+        strcpy(then[k], args[pointer]);
+        k++;
+        
+    }
+
+    k=0;
+
+    for (pointer; pointer < sizeof(args); pointer++)
+    {
+        if (strcmp(args[pointer], "else") ==0) continue;
+        if (strcmp(args[pointer], "end") ==0) break;;
+        strcpy(elsee[k], args[pointer]);
+        k++;
+    }
+
+    if (suchel_execute(condition)){
+        suchel_execute(then);
+    }
+    else suchel_execute(elsee);
+
+    return 1;
+    
 }
 
 int suchel_cd(char **args) {
@@ -152,7 +204,7 @@ int suchel_cd(char **args) {
         fprintf(stderr, "suchel: expected argument to \"cd\"\n");
     } else {
         if (chdir(args[1]) != 0) {
-            perror("suchel");
+            perror("not successful \n");
         }
     }
     return 1;
@@ -161,29 +213,17 @@ int suchel_cd(char **args) {
 int suchel_help(char **args) {
 
     //read from help.txt
+     FILE *fp;
+    char str[1000];
+
     if (args[1]== NULL)
     {
-        FILE *fp;
-        char str[1000];
         fp = fopen("help.txt", "r");
-        if (fp== NULL){
-            printf("Could not open file");
-            return 0;
-        }
-
-        while (fgets(str,1000,fp) != NULL){
-            printf("%s", str);
-        }
-        
-        fclose(fp);
     }
     else
     {
         char command[256];
         strcpy(command, args[1]);
-
-        FILE *fp;
-        char str[1000];
 
         //concat two strings 
         char hh[24] = "h";
@@ -191,18 +231,15 @@ int suchel_help(char **args) {
         strcat(hh, ".txt");
 
         fp = fopen(hh, "r");
-        if (fp== NULL){
+    }
+
+    if (fp== NULL){
             printf("Could not open file");
             return 0;
         }
 
-        while (fgets(str,1000,fp) != NULL){
-            printf("%s", str);
-        }
-        
-        fclose(fp);
-
-    }
+    while (fgets(str,1000,fp) != NULL) printf("%s", str);
+    fclose(fp);
     return 1;
 
 }
@@ -213,24 +250,24 @@ int suchel_exit(char **args) {
 
 int suchel_history(char **args) {
 
-    //read from a txt file
+    //display the array
     for (int i = 0; i < history_count; i++) {
-        printf("%d %s\n", i, history[i]);
+        printf("%d %s\n", i+1, history[i]);
     }
 
     return 1;
 }
 
 void load_history_from_array(){
-     FILE *fp;
-    
+    FILE *fp;
+    //we open the txt in w mode to clean it
     fp = fopen("history.txt", "w");
     fclose(fp);
     fp = fopen("history.txt", "a");
 
     for (int i = 0; i < history_count; i++)
     {
-        fprintf(fp, "%s \n", history[i]);
+        fprintf(fp, "%s\n", history[i]);
     }
     
     fclose(fp);
@@ -247,7 +284,7 @@ void load_history_from_txt(){
 
     while (fgets(line, sizeof(line), fp) != NULL)
     {
-        //history[i] = malloc(strlen(line)+1);
+        if ((line=='\0') || (line == "" ) || (line == " ")) continue;
         strcpy(history[i], line);
         i++;
     }
@@ -257,11 +294,11 @@ void load_history_from_txt(){
 
 }
 
-void save_history(char* command) {
-    if (strcmp(command, "history") == 0 || strcmp(command, "") == 0) {
-        // Don't save the history command itself
-        return;
-    }
+void save_history(char *command) {
+
+    //dont save if it starts with a space
+    if (isspace(*command)) return;
+   
 
     // If history is full, shift all commands to the left and discard the oldest one
     if (history_count == MAX_HISTORY_SIZE) {
@@ -280,7 +317,7 @@ void save_history(char* command) {
 }
 
 int suchel_again(char** command_parts) {
-    int index = atoi(command_parts[1]);
+    int index = atoi(command_parts[1]) -1;
     int numTokens = 0;
 
     if (index >= 0 && index <= history_count) {
@@ -294,7 +331,7 @@ int suchel_again(char** command_parts) {
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
         int status = suchel_execute(tokens);
-        save_history(command);
+        //save_history(command);
     } else {
         printf("Invalid command index\n");
     }

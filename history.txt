@@ -1,17 +1,3 @@
-ls
- 
-pwd 
- 
-help 
- 
-help cd 
- 
-jajaja  
- 
-hello 
- 
-help 
- 
-help hitory  
-help history 
-exit 
+if pwd then ls else pwd end
+
+if pwd then ls else pwd end
