@@ -697,7 +697,12 @@ int suchel_execute(char **args) {
     int numCommands = 0;
     int numSeparators = 0;
 
-    bool chained = false;
+    bool chained = false; 
+
+
+    //if args contains a || && ; | > < >> separate it for 
+    
+    
 
     //check if args contains ; and separate the commands
     for (int i = 0; args[i]!= NULL; i++)
@@ -841,7 +846,6 @@ void suchel_loop() {
         
         if ((tokens[0] = strtok(line, " \n\t")) == NULL) continue;
 
-
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
@@ -855,3 +859,4 @@ int main() {
     suchel_loop();
     return EXIT_SUCCESS;
 }
+

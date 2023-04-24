@@ -30,4 +30,4 @@ if 1pt
 multiple ifs 0.5
 help 1pt
 
-total: 6pts
+total: 6.5pts
