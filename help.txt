@@ -6,3 +6,27 @@ true
 false 
 history
 again
+||
+&&
+;
+if then else end
+
+Para ver mas info:   (Luis mira a ver que cada archivo este creado con su contenido dentro)
+help cd
+help exit
+help true
+help false
+help history
+help again
+help chain
+help if
+
+
+funcionalidades:
+basic 3pts
+history 0.5pts
+chain 0.5pts
+if 1pt
+help 1pt
+
+total: 6pts

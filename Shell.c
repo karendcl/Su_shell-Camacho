@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define TRUE 1
 #define FALSE !TRUE
@@ -155,16 +156,74 @@ int suchel_num_builtins() {
 int suchel_cd(char **args) {
     if (args[1] == NULL) {
         fprintf(stderr, "suchel: expected argument to \"cd\"\n");
+        return 1;
     } else {
         if (chdir(args[1]) != 0) {
-            perror("could not find the directory");
+             perror("could not find the directory");
+             return 1;
         }
     }
-    return 1;
+    //return 1;
+    return 0;
 }
 
 int suchel_if(char**args){
-    return 1;
+    //iterate through args and copy the condition
+    int i=0;
+    //iterate through args
+    while(args[i] != NULL)
+    {
+        //if we find the then keyword
+        if(strcmp(args[i], "then") == 0){
+            //we separate the condition
+            char* condition[100];
+            int j = 1;
+
+            while(j < i){
+                condition[j-1] = args[j];
+                j++;
+            }
+            condition[j] = NULL;
+
+            //we separate the then
+            char* then[100];
+            j = i + 1;
+            int k = 0;
+            while(args[j] != NULL && strcmp(args[j], "else") != 0 && strcmp(args[j], "end") != 0){
+                then[k] = args[j];
+                j++;
+                k++;
+            }
+            then[k] = NULL;
+
+            //we separate the else
+            char* elsee[100];
+            j++;
+            k = 0;
+            while(args[j] != NULL && strcmp(args[j], "end") != 0){
+                elsee[k] = args[j];
+                j++;
+                k++;
+            }
+            elsee[k] = NULL;
+
+            //we execute the condition
+            int result = suchel_execute(condition);
+
+            //if the condition is true
+            if(result == 0)
+            {
+                //we execute the then
+                return suchel_execute(then);
+            }else{
+                //we execute the else if elsee is not empty
+                if(strcmp(elsee[0], "") != 0)
+                return suchel_execute(elsee);
+            }
+        }
+        i++;
+    }
+    return 0;
 }
 
 int suchel_help(char **args) {
@@ -192,17 +251,17 @@ int suchel_help(char **args) {
 
     if (fp== NULL){
             printf("Could not open file");
-            return 0;
+            return 1;
         }
 
     while (fgets(str,1000,fp) != NULL) printf("%s", str);
     fclose(fp);
-    return 1;
+    return 0;
 
 }
 
 int suchel_exit(char **args) {
-    return 0;
+    return 1;
 }
 
 int suchel_history(char **args) {
@@ -212,7 +271,7 @@ int suchel_history(char **args) {
         printf("%d %s\n", i+1, history[i]);
     }
 
-    return 1;
+    return 0;
 }
 
 void load_history_from_array(){
@@ -257,9 +316,13 @@ void save_history(char* command) {
 
     //add --> if tokens[0] == again return
 
-    //char* tokens[MAX_SIZE_CMD];
+    //check if command starts with again
+    char* tokens[MAX_SIZE_CMD];
+    char* command_copy = (char*) malloc(strlen(command) + 1);
+    strcpy(command_copy, command);
+    tokens[0] = strtok(command_copy, " ");
+    if (strcmp(tokens[0], "again") == 0) return;
 
-    //if ((tokens[0] = strtok(command, " \n\t")) == "again") return;
     
 
     // If history is full, shift all commands to the left and discard the oldest one
@@ -288,7 +351,7 @@ int suchel_again(char** command_parts) {
 
         printf("Executing command: %s\n", command);
 
-        if ((tokens[0] = strtok(command, " \n\t")) == NULL) return 1;
+        if ((tokens[0] = strtok(command, " \n\t")) == NULL) return 0;
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
@@ -296,9 +359,10 @@ int suchel_again(char** command_parts) {
         save_history(command);
     } else {
         printf("Invalid command index\n");
+        return 1;
     }
 
-    return 1;
+    return 0;
 }
 
 /* ============================================================================================ */
@@ -362,7 +426,7 @@ int HandlePipeAndPipeOutput(int *pipeFd, char **pipeArgs, int option, char *outp
     close(pipeFd[1]);
     waitpid(pid2, NULL, 0);
 
-    return 1;
+    return 0;
 }
 
 int suchel_launch(char **args, char *inputFile, char *outputFile, int option) {
@@ -397,7 +461,7 @@ int suchel_launch(char **args, char *inputFile, char *outputFile, int option) {
 
         if (execvp(args[0], args) == err) 
         {
-            printf("err");
+            printf("error");
             kill(getpid(), SIGTERM);
             return -1;
         }
@@ -405,7 +469,7 @@ int suchel_launch(char **args, char *inputFile, char *outputFile, int option) {
 
     waitpid(pid, NULL, 0);
 
-    return 1;
+    return 0;
 }
 
 int suchel_parsing(char **commands, char **separators, int numCommands, int numSeparators) {
@@ -534,6 +598,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
     remove(PIPE_FILE);
 }
 
+
 int suchel_execute(char **args) {
 
     char **commands = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
@@ -541,14 +606,105 @@ int suchel_execute(char **args) {
     int numCommands = 0;
     int numSeparators = 0;
 
+    bool chained = false;
+
+    //check if args contains ; and separate the commands
+    for (int i = 0; args[i]!= NULL; i++)
+    {
+        if (strcmp(args[i],";")==0){
+            //separate the commands by ; and execute them
+            chained = true;
+            char **args1 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            char **args2 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            int j = 0;
+            while (strcmp(args[j],";")!=0){
+                args1[j] = args[j];
+                j++;
+            }
+            args1[j] = NULL;
+            j++;
+            int k = 0;
+            while (args[j]!=NULL){
+                args2[k] = args[j];
+                j++;
+                k++;
+            }
+            args2[k] = NULL;
+            suchel_execute(args1);
+            suchel_execute(args2);
+        }
+    }
+
+
+    //check if args contains && and separate the commands
+    for (int i = 0; args[i]!= NULL; i++)
+    {
+        if (strcmp(args[i],"&&")==0){
+            chained = true;
+            //separate the commands by ; and execute them
+            char **args1 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            char **args2 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            int j = 0;
+            while (strcmp(args[j],"&&")!=0){
+                args1[j] = args[j];
+                j++;
+            }
+            args1[j] = NULL;
+            j++;
+            int k = 0;
+            while (args[j]!=NULL){
+                args2[k] = args[j];
+                j++;
+                k++;
+            }
+            args2[k] = NULL;
+            int p = suchel_execute(args1);
+            if (p == 0){
+                return suchel_execute(args2);
+            }
+            else return 0;
+            
+        }
+    }
+
+    //check if args contains || and separate the commands
+    for (int i = 0; args[i]!= NULL; i++)
+    {
+        if (strcmp(args[i],"||")==0){
+            chained = true;
+            //separate the commands by ; and execute them
+            char **args1 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            char **args2 = malloc(sizeof(char *) * (MAX_SIZE_CMD + 1));
+            int j = 0;
+            while (strcmp(args[j],"||")!=0){
+                args1[j] = args[j];
+                j++;
+            }
+            args1[j] = NULL;
+            j++;
+            int k = 0;
+            while (args[j]!=NULL){
+                args2[k] = args[j];
+                j++;
+                k++;
+            }
+            args2[k] = NULL;
+            int p = suchel_execute(args1);
+            if (p !=0){
+                suchel_execute(args2);
+            }
+            else return 0;
+            
+        }
+    }
+
+    if (chained == false){
     for (int j = 0; j < suchel_num_builtins(); ++j) {
         if (strcmp(args[0], builtin_str[j]) == 0) {
             return (*builtin_func[j])(args);
         }
     }
 
-    
-    
 
     for (int i = 0; args[i] != NULL; i++) {
         if (strcmp(args[i], "<") == 0 || strcmp(args[i], ">") == 0 || strcmp(args[i], "|") == 0 || strcmp(args[i], ">>") == 0)   
@@ -567,27 +723,24 @@ int suchel_execute(char **args) {
 
     suchel_parsing(commands, separators, numCommands, numSeparators);
 
+    }
+
     free(commands);
     free(separators);
-    return 1;
+    return 0;
 }
-
-
 
 void suchel_loop() {
     char line[MAX_SIZE_CMD];
     char *tokens[MAX_SIZE_CMD];
     int numTokens;
-    int status = 1;
+    int status = 0;
     pid = -10;
     init();
 
 
     do {
-//        if (no_reprint_prmpt == 0) {
-//            printf("\n");
-//            printf("suchel> ");
-//        }
+
         printf("Camacho $\t");
         memset(line, '\0', MAX_SIZE_CMD);
 
@@ -603,7 +756,7 @@ void suchel_loop() {
 
         status = suchel_execute(tokens);
 
-    } while (status);
+    } while (status == 0);
 }
 
 int main() {

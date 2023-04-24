@@ -1,20 +1,20 @@
-again 6
+if 
  
-history 
- 
-history
- 
-again 1
- 
-history 
+if 
  
 history
  
-exit
+help
  
-history
+help history ; pwd
  
-echo jajajaj > hola.txt
+help history || pwd
  
-exit
+help history && pwd
+ 
+cd && pwd
+ 
+false && pwd
+ 
+true && pwd
  
