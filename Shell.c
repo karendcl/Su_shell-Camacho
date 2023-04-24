@@ -123,6 +123,8 @@ int suchel_history(char **args);
 
 int suchel_again(char **args);
 
+int suchel_if(char **args);
+
 int suchel_execute(char **args);
 
 int suchel_if(char **args);
@@ -147,10 +149,59 @@ int (*builtin_func[])(char **) = {
         &suchel_true,
         &suchel_false,
         &suchel_if
+        &suchel_false,
+        &suchel_if
 };
 
 int suchel_num_builtins() {
     return sizeof(builtin_str) / sizeof(char *);
+}
+
+int suchel_if(char **args){
+    char *condition[1024];
+    char *then[1024];
+    char *elsee[1024];
+    int pointer = 0;
+    int k = 0;
+
+    for (int i = 0; i < sizeof(args); i++)
+    {
+        if (strcmp(args[i], "if") ==0) continue;
+        if (strcmp(args[i], "then") ==0) break;;
+        //condition[k] = args[i];
+        strcpy(condition[k], args[i]);
+        k++;
+        pointer = i;
+    }
+
+    k=0;
+
+    for (pointer; pointer < sizeof(args); pointer++)
+    {
+        if (strcmp(args[pointer], "then") ==0) continue;
+        if (strcmp(args[pointer], "else") ==0) break;;
+        strcpy(then[k], args[pointer]);
+        k++;
+        
+    }
+
+    k=0;
+
+    for (pointer; pointer < sizeof(args); pointer++)
+    {
+        if (strcmp(args[pointer], "else") ==0) continue;
+        if (strcmp(args[pointer], "end") ==0) break;;
+        strcpy(elsee[k], args[pointer]);
+        k++;
+    }
+
+    if (suchel_execute(condition)){
+        suchel_execute(then);
+    }
+    else suchel_execute(elsee);
+
+    return 1;
+    
 }
 
 int suchel_cd(char **args) {
@@ -338,6 +389,9 @@ int suchel_help(char **args) {
     }
 
     if (fp== NULL){
+    }
+
+    if (fp== NULL){
             printf("Could not open file");
             return 1;
         }
@@ -355,7 +409,9 @@ int suchel_exit(char **args) {
 int suchel_history(char **args) {
 
     //display the array
+    //display the array
     for (int i = 0; i < history_count; i++) {
+        printf("%d %s\n", i+1, history[i]);
         printf("%d %s\n", i+1, history[i]);
     }
 
@@ -363,15 +419,15 @@ int suchel_history(char **args) {
 }
 
 void load_history_from_array(){
-     FILE *fp;
-    
+    FILE *fp;
+    //we open the txt in w mode to clean it
     fp = fopen("history.txt", "w");
     fclose(fp);
     fp = fopen("history.txt", "a");
 
     for (int i = 0; i < history_count; i++)
     {
-        fprintf(fp, "%s \n", history[i]);
+        fprintf(fp, "%s\n", history[i]);
     }
     
     fclose(fp);
@@ -427,7 +483,7 @@ void save_history(char* command) {
 }
 
 int suchel_again(char** command_parts) {
-    int index = atoi(command_parts[1]);
+    int index = atoi(command_parts[1]) -1;
     int numTokens = 0;
 
     if (index > 0 && index <= history_count) {
@@ -441,7 +497,7 @@ int suchel_again(char** command_parts) {
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
         int status = suchel_execute(tokens);
-        save_history(command);
+        //save_history(command);
     } else {
         printf("Invalid command index\n");
         return 1;
