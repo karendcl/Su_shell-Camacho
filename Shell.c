@@ -170,7 +170,95 @@ int suchel_cd(char **args) {
 int suchel_if(char**args){
     //iterate through args and copy the condition
     int i=0;
-    //iterate through args
+
+    int cant_end = 0;
+    int cant_if = 0;
+    int cant_then = 0;
+    int cant_else = 0;
+    int pend = 0;
+    int pthen =0;
+    int pelse = 0;
+
+    while(args[i] != NULL){
+        if(strcmp(args[i], "end") == 0){
+            pend = i;
+            cant_if--;
+            cant_then--;
+        }
+        if(strcmp(args[i], "if") == 0){
+            cant_if++;
+        }
+        if(strcmp(args[i], "then") == 0){
+            cant_then++;
+                if (cant_then==cant_if) && (cant_if==1){
+                    pthen = i; //where the then command starts
+                    }
+        }
+
+        if(strcmp(args[i], "else") == 0){
+                if (cant_if==1){ //if i find an else command and I only have an open if command
+                    pelse = i; //where the else command starts
+                    }
+        }
+        
+        i++;
+    }
+
+    if (cant_if != 0){
+        printf("Error: if command not closed");
+        return 1;
+    }
+
+    if (pelse==0){
+        pelse = pend;
+    }
+
+    //copy into condition array from 0 to pthen
+    char* condition[100];
+    int j = 1;
+    while(j < pthen){
+        condition[j-1] = args[j];
+        j++;
+    }
+    condition[j] = NULL;
+
+    //copy into then array from pthen+1 to pelse
+    char* then[100];
+    j = pthen + 1;
+    int k = 0;
+    while(j < pelse){
+        then[k] = args[j];
+        j++;
+        k++;
+    }
+    then[k] = NULL;
+
+    //copy into else array from pelse+1 to end
+    char* elsee[100];
+    j = pelse + 1;
+    k = 0;
+    while(args[j] != NULL){
+        elsee[k] = args[j];
+        j++;
+        k++;
+    }
+    elsee[k] = NULL;
+
+    //execute the condition
+    int condition_result = suchel_execute(condition);
+
+    //execute the then or the else
+    if(condition_result == 0){
+        return suchel_execute(then);
+    }else{
+        return suchel_execute(elsee);
+    }
+
+    return 0;
+}
+
+
+    /*//iterate through args
     while(args[i] != NULL)
     {
         //if we find the then keyword
@@ -224,7 +312,7 @@ int suchel_if(char**args){
         i++;
     }
     return 0;
-}
+}*/
 
 int suchel_help(char **args) {
 
@@ -242,7 +330,7 @@ int suchel_help(char **args) {
         strcpy(command, args[1]);
 
         //concat two strings 
-        char hh[24] = "h";
+        char hh[256] = "h";
         strcat(hh, command);
         strcat(hh, ".txt");
 
@@ -314,8 +402,6 @@ void save_history(char* command) {
     
     if (isspace(*command)) return;
 
-    //add --> if tokens[0] == again return
-
     //check if command starts with again
     char* tokens[MAX_SIZE_CMD];
     char* command_copy = (char*) malloc(strlen(command) + 1);
@@ -323,7 +409,6 @@ void save_history(char* command) {
     tokens[0] = strtok(command_copy, " ");
     if (strcmp(tokens[0], "again") == 0) return;
 
-    
 
     // If history is full, shift all commands to the left and discard the oldest one
     if (history_count == MAX_HISTORY_SIZE) {
@@ -713,7 +798,7 @@ int suchel_execute(char **args) {
             commands[numCommands++] = NULL; // mark end of previous command
         } else if (strcmp(args[i], "#") == 0) 
         {
-            break;
+            break; //ignore the rest of the command
         } else 
         {
             commands[numCommands++] = args[i];
