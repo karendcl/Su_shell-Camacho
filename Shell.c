@@ -149,60 +149,12 @@ int (*builtin_func[])(char **) = {
         &suchel_true,
         &suchel_false,
         &suchel_if
-        &suchel_false,
-        &suchel_if
 };
 
 int suchel_num_builtins() {
     return sizeof(builtin_str) / sizeof(char *);
 }
 
-int suchel_if(char **args){
-    char *condition[1024];
-    char *then[1024];
-    char *elsee[1024];
-    int pointer = 0;
-    int k = 0;
-
-    for (int i = 0; i < sizeof(args); i++)
-    {
-        if (strcmp(args[i], "if") ==0) continue;
-        if (strcmp(args[i], "then") ==0) break;;
-        //condition[k] = args[i];
-        strcpy(condition[k], args[i]);
-        k++;
-        pointer = i;
-    }
-
-    k=0;
-
-    for (pointer; pointer < sizeof(args); pointer++)
-    {
-        if (strcmp(args[pointer], "then") ==0) continue;
-        if (strcmp(args[pointer], "else") ==0) break;;
-        strcpy(then[k], args[pointer]);
-        k++;
-        
-    }
-
-    k=0;
-
-    for (pointer; pointer < sizeof(args); pointer++)
-    {
-        if (strcmp(args[pointer], "else") ==0) continue;
-        if (strcmp(args[pointer], "end") ==0) break;;
-        strcpy(elsee[k], args[pointer]);
-        k++;
-    }
-
-    if (suchel_execute(condition)){
-        suchel_execute(then);
-    }
-    else suchel_execute(elsee);
-
-    return 1;
-    
-}
 
 int suchel_cd(char **args) {
     if (args[1] == NULL) {
@@ -241,7 +193,7 @@ int suchel_if(char**args){
         }
         if(strcmp(args[i], "then") == 0){
             cant_then++;
-                if (cant_then==cant_if) && (cant_if==1){
+                if ((cant_then==cant_if) && (cant_if==1)){
                     pthen = i; //where the then command starts
                     }
         }
@@ -256,8 +208,8 @@ int suchel_if(char**args){
     }
 
     if (cant_if != 0){
-        printf("Error: if command not closed");
-        return 1;
+        printf("Error: if command not closed \n");
+        return 0;
     }
 
     if (pelse==0){
@@ -284,11 +236,11 @@ int suchel_if(char**args){
     }
     then[k] = NULL;
 
-    //copy into else array from pelse+1 to end
+    //copy into else array from pelse+1 to pend
     char* elsee[100];
     j = pelse + 1;
     k = 0;
-    while(args[j] != NULL){
+    while(j < pend){
         elsee[k] = args[j];
         j++;
         k++;
@@ -409,9 +361,7 @@ int suchel_exit(char **args) {
 int suchel_history(char **args) {
 
     //display the array
-    //display the array
     for (int i = 0; i < history_count; i++) {
-        printf("%d %s\n", i+1, history[i]);
         printf("%d %s\n", i+1, history[i]);
     }
 
@@ -483,7 +433,7 @@ void save_history(char* command) {
 }
 
 int suchel_again(char** command_parts) {
-    int index = atoi(command_parts[1]) -1;
+    int index = atoi(command_parts[1]);
     int numTokens = 0;
 
     if (index > 0 && index <= history_count) {

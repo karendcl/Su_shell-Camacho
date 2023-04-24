@@ -1,19 +1,20 @@
-if 
- 
-if 
- 
+if true then ls else pwd end
+
+if true then ls
+
+if
+
+if true then if false then ls else pwd end end
+
+exit
+
 history
- 
-help
- 
-help history ; pwd
- 
-help history || pwd
- 
-help history && pwd
- 
-cd && pwd
- 
-false && pwd
- 
-true && pwd
+
+history
+
+history
+
+exit
+
+history
+
