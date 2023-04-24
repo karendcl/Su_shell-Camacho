@@ -159,14 +159,13 @@ int suchel_num_builtins() {
 int suchel_cd(char **args) {
     if (args[1] == NULL) {
         fprintf(stderr, "suchel: expected argument to \"cd\"\n");
-        return 1;
+        return 0;
     } else {
         if (chdir(args[1]) != 0) {
              perror("could not find the directory");
-             return 1;
+             return 0;
         }
     }
-    //return 1;
     return 0;
 }
 
@@ -260,63 +259,6 @@ int suchel_if(char**args){
     return 0;
 }
 
-
-    /*//iterate through args
-    while(args[i] != NULL)
-    {
-        //if we find the then keyword
-        if(strcmp(args[i], "then") == 0){
-            //we separate the condition
-            char* condition[100];
-            int j = 1;
-
-            while(j < i){
-                condition[j-1] = args[j];
-                j++;
-            }
-            condition[j] = NULL;
-
-            //we separate the then
-            char* then[100];
-            j = i + 1;
-            int k = 0;
-            while(args[j] != NULL && strcmp(args[j], "else") != 0 && strcmp(args[j], "end") != 0){
-                then[k] = args[j];
-                j++;
-                k++;
-            }
-            then[k] = NULL;
-
-            //we separate the else
-            char* elsee[100];
-            j++;
-            k = 0;
-            while(args[j] != NULL && strcmp(args[j], "end") != 0){
-                elsee[k] = args[j];
-                j++;
-                k++;
-            }
-            elsee[k] = NULL;
-
-            //we execute the condition
-            int result = suchel_execute(condition);
-
-            //if the condition is true
-            if(result == 0)
-            {
-                //we execute the then
-                return suchel_execute(then);
-            }else{
-                //we execute the else if elsee is not empty
-                if(strcmp(elsee[0], "") != 0)
-                return suchel_execute(elsee);
-            }
-        }
-        i++;
-    }
-    return 0;
-}*/
-
 int suchel_help(char **args) {
 
     //read from help.txt
@@ -345,7 +287,7 @@ int suchel_help(char **args) {
 
     if (fp== NULL){
             printf("Could not open file");
-            return 1;
+            return 0;
         }
 
     while (fgets(str,1000,fp) != NULL) printf("%s", str);
@@ -447,10 +389,10 @@ int suchel_again(char** command_parts) {
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
         int status = suchel_execute(tokens);
-        //save_history(command);
+        save_history(command);
     } else {
         printf("Invalid command index\n");
-        return 1;
+        return 0;
     }
 
     return 0;

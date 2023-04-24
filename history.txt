@@ -1,20 +1,20 @@
-if true then ls else pwd end
+cat temp | grep s | sort
 
-if true then ls
+if true then if false then pwd else ls end end
 
-if
+ls | grep h | sort
 
-if true then if false then ls else pwd end end
+ls | grep a | sort
+
+help
+
+cat < temp | grep h | sort > temp2
+
+help
+
+help history
+
+help cd
 
 exit
-
-history
-
-history
-
-history
-
-exit
-
-history
 
