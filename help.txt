@@ -27,6 +27,7 @@ basic 3pts
 history 0.5pts
 chain 0.5pts
 if 1pt
+multiple ifs 0.5
 help 1pt
 
 total: 6pts
