@@ -283,9 +283,6 @@ int suchel_help(char **args) {
     }
 
     if (fp== NULL){
-    }
-
-    if (fp== NULL){
             printf("Could not open file \n");
             return 0;
         }
@@ -353,9 +350,15 @@ void save_history(char* command) {
 
     //check if command starts with again
     char* tokens[MAX_SIZE_CMD];
+
     char* command_copy = (char*) malloc(strlen(command) + 1);
     strcpy(command_copy, command);
-    tokens[0] = strtok(command_copy, " ");
+
+    char* command_copy1 = (char*) malloc(strlen(command) + 1);
+    strcpy(command_copy1, command);
+
+    tokens[0] = strtok(command_copy1, " ");
+
     if (strcmp(tokens[0], "again") == 0) return;
 
 
@@ -368,7 +371,7 @@ void save_history(char* command) {
     }
 
     // Add the new command to the end of history
-    strcpy(history[history_count], command);
+    strcpy(history[history_count], command_copy);
     history_count++;
 
     load_history_from_array();
@@ -380,17 +383,29 @@ int suchel_again(char** command_parts) {
     int numTokens = 0;
 
     if (index > 0 && index <= history_count) {
-        char* command = history[index-1];
-        char* tokens[MAX_SIZE_CMD];
+        char* command = (char*) malloc(strlen(history[index-1]) + 1) ;
+        strcpy(command, history[index-1]);
 
+        // char* command_copy = (char*) malloc(strlen(command) + 1);
+        // strcpy(command_copy, command);
+
+       
+        char* tokens[MAX_SIZE_CMD];
+        save_history(command);
+       
+
+        // printf("Executing command: %s\n", command_copy);
         printf("Executing command: %s\n", command);
 
+        // char* command_copy1 = (char*) malloc(strlen(command_copy) + 1);
+        // strcpy(command_copy1, command_copy);
+
+        // if ((tokens[0] = strtok(command_copy, " \n\t")) == NULL) return 0;
         if ((tokens[0] = strtok(command, " \n\t")) == NULL) return 0;
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
         int status = suchel_execute(tokens);
-        save_history(command);
     } else {
         printf("Invalid command index\n");
         return 0;

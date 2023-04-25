@@ -1,14 +1,19 @@
-history
-
-if true then if false then true else ls | grep a | sort end end
+ls | grep a
 
 history
 
-ls
-ls
-ls
-ls
-ls
+exit
+
+history
+
+history
+
+ls | grep a
+
+history
+
+ls | grep a
+
 history
 
 exit
