@@ -1,0 +1,21 @@
+Con este comando se pueden hacer operaciones condicionales.
+if: Evalúa un comando devolviendo true si el valor de retorno es 0
+Ejemplo: if Command1 end es true si Command1 devolvió 0
+
+then: debe estar precedido de un if y solo se ejecutará si este devolvió true, en ese caso ejecuta el siguiente comando.
+Ejemplo if Command1 then Command2 end ejecutará Command2 solo si Command1 devolvió 0, es decir, si el if dio true
+
+else: debe estar precedido de una cadena de if-then y solo se ejecutará en caso de que el if devuelva falso.
+Ejemplo if Command1 then Command2 else Command3 end ejecuta Command2 si Command1 devolvió 0, de lo contario ejecuta Command3.
+
+end: Finaliza la expresión.
+
+(Véase help true y help false)
+
+Para hacer esto son contados la cantidad de if, then, else y end que aparecen en la linea del comando, anotando las posiciones en las que estos para luego ejecutarlos en el orden correcto.
+posteriormente se ejecutan (o no) los comandos, se analizan los valores de retorno y se actúa en consecuencia.
+La manera en que está implementado permite hacer "Multi-if" es decir, se puenden poner if dentro de otros.
+Ejemplo: if Command1 then if Command2 then Command3 else Command4 end else Command5 end
+Esta linea ejecuta Command1, si da true entonces ejecuta Command2, si este último da true entonces ejecuta Command3, de no ser asi entonces se ejecuta Command4, si en un principio Command1 dió false entonces se ejecuta command5.
+
+Esto es posible ya que en un principio contamos 2 if pero anotamos la posición del primero, si Command1 da true es entonces que pasamos a la posicion donde estaba el 2do if, y asi con el resto de la expresión.

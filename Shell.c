@@ -10,8 +10,8 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#define TRUE 0
+#define FALSE 1
 
 // Shell pid, pgid, terminal modes
 static pid_t suchel_PID;
@@ -158,7 +158,7 @@ int suchel_num_builtins() {
 
 int suchel_cd(char **args) {
     if (args[1] == NULL) {
-        fprintf(stderr, "suchel: expected argument to \"cd\"\n");
+        fprintf(stderr, "Camacho: expected argument to \"cd\"\n");
         return 0;
     } else {
         if (chdir(args[1]) != 0) {
@@ -267,7 +267,7 @@ int suchel_help(char **args) {
 
     if (args[1]== NULL || args[1]=="")
     {
-        fp = fopen("help.txt", "r");
+        fp = fopen("Shell help.txt", "r");
     }
     else
     {
@@ -286,12 +286,13 @@ int suchel_help(char **args) {
     }
 
     if (fp== NULL){
-            printf("Could not open file");
+            printf("Could not open file \n");
             return 0;
         }
 
     while (fgets(str,1000,fp) != NULL) printf("%s", str);
     fclose(fp);
+    printf("\n");
     return 0;
 
 }
@@ -313,9 +314,9 @@ int suchel_history(char **args) {
 void load_history_from_array(){
     FILE *fp;
     //we open the txt in w mode to clean it
-    fp = fopen("history.txt", "w");
+    fp = fopen("Shell history.txt", "w");
     fclose(fp);
-    fp = fopen("history.txt", "a");
+    fp = fopen("Shell history.txt", "a");
 
     for (int i = 0; i < history_count; i++)
     {
@@ -329,7 +330,7 @@ void load_history_from_txt(){
     FILE *fp;
     char line[1000];
     int i = 0;
-    fp = fopen("history.txt","r");
+    fp = fopen("Shell history.txt","r");
     if (fp==NULL){
         printf("Error");
     }
@@ -519,7 +520,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
                 (strcmp(separators[currSeparator], ">") == 0 || strcmp(separators[currSeparator], ">>") == 0)) {
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
-                    printf("Not enough arguments");
+                    printf("Not enough arguments \n");
                     return 1;
                 }
 
@@ -533,7 +534,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
             } else if (separators[currSeparator] != NULL && strcmp(separators[currSeparator], "<") == 0) {
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
-                    printf("Not enough arguments");
+                    printf("Not enough arguments \n");
                     return 1;
                 }
 
@@ -557,7 +558,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
             } else if (separators[currSeparator] != NULL && strcmp(separators[currSeparator], "|") == 0) {
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
-                    printf("Not enough arguments");
+                    printf("Not enough arguments \n");
                     return 1;
                 }
 
@@ -595,7 +596,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
                     i-=2;
 
                     if (commands[i] == NULL) {
-                        printf("Not enough arguments");
+                        printf("Not enough arguments \n");
                         return 1;
                     }
 
@@ -779,7 +780,7 @@ void suchel_loop() {
 
     do {
 
-        printf("Camacho $\t");
+        printf("Camacho \033[33m$ \033[32m>>>>> \033[0m");
         memset(line, '\0', MAX_SIZE_CMD);
 
         fgets(line, MAX_SIZE_CMD, stdin);

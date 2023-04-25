@@ -1,0 +1,4 @@
+cd: Cambia el directorio actual en el que se encuentra el Shell.
+Ejemplo: cd Folder1/Folder2
+
+Para esto se utilizó la función chdir cuya funcionalidad coincide con la de este comando.

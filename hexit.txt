@@ -1,0 +1,3 @@
+exit: Permite terminar la ejecución de su Shell Camacho.
+
+Para esto se retorna 1 como valor de salida.

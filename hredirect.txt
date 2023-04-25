@@ -1,0 +1,11 @@
+Permite el redireccionamiento de memoria.
+
+>: Permite redirigir la salida de un comando a un archivo.
+Ejemplo: ls > archivo.txt guardará la lista de carpetas del directorio actual en el archivo "archivo.txt".
+Nota: Si "archivo.txt" no extiste, se creará, y si existe será sobreescrito su contenido.
+
+<: Permite redirigir la entrada de un comando desde un archivo.
+Ejemplo: sort < archivo.txt el comando sort ordenará el contenido de "archivo.txt".
+
+>>: Al igual que ">" permite redirigir la salida de un comando a un archivo pero en este caso el contenido del archivo no se sobreescribe.
+Ejemplo: ejecutar el comando: echo "Hola" >> archivo.txt dos veces hará que el contenido de "archivo.txt" sea "Hola" en la primera linea y "Hola" en la 2da linea.

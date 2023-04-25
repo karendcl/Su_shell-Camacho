@@ -1,0 +1,5 @@
+again: Permite volver a ejecutar un comando introducido anteriormente.
+Ejemplo: again 4 volverá a ejecutar el comando que ocupa el puesto número 4 en el historial (vease help history)
+
+Para esto leemos el array que guarda nuestro historial y ejecutamos la linea que especificó el usuario.
+Posteriormente dicha linea vuelve a guardarse en el historial como un nuevo comando.

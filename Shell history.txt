@@ -1,0 +1,20 @@
+exit
+
+help
+
+help chain
+
+help redirect
+
+help pipes
+
+history
+
+ls | grep a | sort
+
+cd ..\
+
+pwd
+
+cd ../
+

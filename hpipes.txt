@@ -1,0 +1,6 @@
+pipes (|): Se utilizan para que la salida de un comado sea utilizada como la entrada de un 2do comando.
+Ejemplo: Command1 | Command2 hace que la salida de Command1 se utilice como entrada de Command2.
+
+Para esto se utilizó la función dup2, con la cual se redireccionan los datos a los FileDescriptors correspondientes.
+
+KAREN AQUI FALTA HABLAR DE MULTIPIPES, TE DIRÍA QUE LO HICIERAS EN ESTE MISMO TXT.
