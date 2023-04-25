@@ -2,4 +2,6 @@ history: Muestra los últimos 10 comandos ejecutados por el usuario en orden de 
 
 Para esto se utiliza un txt (Shell history.txt) en el cual se escriben los comandos que ejecuta el usuario, si son más de 10 se eliminará el más antiguo.
 Cada vez que se ejecuta el programa leemos ese txt y guardamos los comandos en un array (dicho array es en verdad una matriz de char de 10x1024 en la que cada fila representa un comando), del cual se leen para mostrarlos en pantalla.
-No se guarda el comando again (Vease help again)
+No se guarda el comando again (Vease help again).
+Un comando no se guarda si este tiene un espacio en su inicio (' command 1').
+

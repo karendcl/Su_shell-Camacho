@@ -12,10 +12,11 @@ end: Finaliza la expresión.
 
 (Véase help true y help false)
 
-Para hacer esto son contados la cantidad de if, then, else y end que aparecen en la linea del comando, anotando las posiciones en las que estos para luego ejecutarlos en el orden correcto.
-posteriormente se ejecutan (o no) los comandos, se analizan los valores de retorno y se actúa en consecuencia.
+Para hacer esto se guardan las posiciones de la expresion "if-then-else-end" mas externa, para luego ejecutarlos en el orden correcto.
+Posteriormente se ejecutan (o no) los comandos, se analizan los valores de retorno y se actúa en consecuencia.
+
 La manera en que está implementado permite hacer "Multi-if" es decir, se puenden poner if dentro de otros.
 Ejemplo: if Command1 then if Command2 then Command3 else Command4 end else Command5 end
 Esta linea ejecuta Command1, si da true entonces ejecuta Command2, si este último da true entonces ejecuta Command3, de no ser asi entonces se ejecuta Command4, si en un principio Command1 dió false entonces se ejecuta command5.
 
-Esto es posible ya que en un principio contamos 2 if pero anotamos la posición del primero, si Command1 da true es entonces que pasamos a la posicion donde estaba el 2do if, y asi con el resto de la expresión.
+Esto es posible ya que se van guardando las posiciones de "if-then-else-end" mas externas, y se van ejecutando las expresiones mas simplificadas, se hacen llamados a suchel_execute con los comandos mas simplificados y si este es de tipo if se vuelve a llamar a suchel_if; y asi hasta ejecutar un comando simple.

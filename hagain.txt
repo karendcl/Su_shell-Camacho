@@ -3,3 +3,4 @@ Ejemplo: again 4 volverá a ejecutar el comando que ocupa el puesto número 4 en
 
 Para esto leemos el array que guarda nuestro historial y ejecutamos la linea que especificó el usuario.
 Posteriormente dicha linea vuelve a guardarse en el historial como un nuevo comando.
+El comando 'again #' no se guarda en el historial.

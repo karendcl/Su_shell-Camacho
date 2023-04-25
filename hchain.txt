@@ -4,12 +4,11 @@ Son operadores para encadenar comandos.
 Ejemplo: Command1; Command2; Command3 hará que se ejecuten todos estos comandos uno a continuación del otro en el orden que aparecen.
 
 &&: Funciona como el operador AND lógico.
-Ejemplo: Command1 && Command2 ejecuta Command1 y si este retorna valor 0 se ejecuta Command2, si este tambien devuelve 0 entonces la expresión entera devuelve true, si falla alguno de los comandos (Devuelve 1) en el trayecto entonces la expresión evalúa como false.
+Ejemplo: Command1 && Command2 ejecuta Command1 y si este retorna valor TRUE(0) se ejecuta Command2, si este tambien devuelve TRUE entonces la expresión entera devuelve true, si falla alguno de los comandos (Devuelve FALSE (1)) en el trayecto entonces la expresión evalúa como false.
 
 
 ||: Funciona como el operador Or lógico.
-Ejemplo: Command1 || Command2 ejecuta Command1 y si este retorna 0 entonces no se ejecuta más ninguno y la expresión se evalúa como true, en caso contario se ejcuta Command2 y se repite el proceso. Por tanto esta expresión devuelve true si alguno de los comandos devuelve 0, en caso contrario devuelve false.
+Ejemplo: Command1 || Command2 ejecuta Command1 y si este retorna TRUE entonces no se ejecuta más ninguno y la expresión se evalúa como true, en caso contario se ejcuta Command2 y se repite el proceso. Por tanto esta expresión devuelve true si alguno de los comandos devuelve 0, en caso contrario devuelve false.
 
-La idea de estos dos últimos comandos es utilizarlos en cuerpos if then else end (véase help if).
 
 Para esto utilizamos un booleano "Chained" que nos indica si había alguno de estos operadores en la linea de comandos a la hora de leerla, de ser asi se toman las consideraciones necesarias con cada una de estos, en caso contrario se ejecuta la linea normalmente.

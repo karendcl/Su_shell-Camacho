@@ -1,3 +1,1 @@
-false: Evalúa como false una expresión de un cuerpo de if-then-else-end (véase help if)
-
-Esta función solo devuelve 1 como valor de salida.
+false: Esta función solo devuelve 1 como valor de salida.
