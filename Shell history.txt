@@ -1,20 +1,15 @@
-exit
+history
 
-help
-
-help chain
-
-help redirect
-
-help pipes
+if true then if false then true else ls | grep a | sort end end
 
 history
 
-ls | grep a | sort
+ls
+ls
+ls
+ls
+ls
+history
 
-cd ..\
-
-pwd
-
-cd ../
+exit
 
