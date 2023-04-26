@@ -1,4 +1,6 @@
-ls | grep a
+history
+
+exit
 
 history
 
@@ -6,13 +8,11 @@ exit
 
 history
 
-history
-
 ls | grep a
 
-history
+ls | grep a > hola.txt
 
-ls | grep a
+help > hola.txt
 
 history
 

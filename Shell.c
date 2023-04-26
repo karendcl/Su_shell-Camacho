@@ -208,7 +208,7 @@ int suchel_if(char**args){
 
     if (cant_if != 0){
         printf("Error: if command not closed \n");
-        return 0;
+        return FALSE;
     }
 
     if (pelse==0){
@@ -256,7 +256,7 @@ int suchel_if(char**args){
         return suchel_execute(elsee);
     }
 
-    return 0;
+    return TRUE;
 }
 
 int suchel_help(char **args) {
@@ -284,18 +284,18 @@ int suchel_help(char **args) {
 
     if (fp== NULL){
             printf("Could not open file \n");
-            return 0;
+            return FALSE;
         }
 
     while (fgets(str,1000,fp) != NULL) printf("%s", str);
     fclose(fp);
     printf("\n");
-    return 0;
+    return TRUE;
 
 }
 
 int suchel_exit(char **args) {
-    return 1;
+    return -1;
 }
 
 int suchel_history(char **args) {
@@ -389,29 +389,30 @@ int suchel_again(char** command_parts) {
         // char* command_copy = (char*) malloc(strlen(command) + 1);
         // strcpy(command_copy, command);
 
-       
         char* tokens[MAX_SIZE_CMD];
         save_history(command);
        
 
-        // printf("Executing command: %s\n", command_copy);
+        //printf("Executing command: %s\n", command_copy);
         printf("Executing command: %s\n", command);
 
         // char* command_copy1 = (char*) malloc(strlen(command_copy) + 1);
         // strcpy(command_copy1, command_copy);
 
         // if ((tokens[0] = strtok(command_copy, " \n\t")) == NULL) return 0;
-        if ((tokens[0] = strtok(command, " \n\t")) == NULL) return 0;
+        if ((tokens[0] = strtok(command, " \n\t")) == NULL) return FALSE;
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
         int status = suchel_execute(tokens);
+        return status;
     } else {
         printf("Invalid command index\n");
-        return 0;
+        return FALSE;
     }
 
-    return 0;
+    return TRUE;
+    
 }
 
 /* ============================================================================================ */
@@ -781,14 +782,14 @@ int suchel_execute(char **args) {
 
     free(commands);
     free(separators);
-    return 0;
+    return TRUE;
 }
 
 void suchel_loop() {
     char line[MAX_SIZE_CMD];
     char *tokens[MAX_SIZE_CMD];
     int numTokens;
-    int status = 0;
+    int status = TRUE;
     pid = -10;
     init();
 
@@ -809,7 +810,7 @@ void suchel_loop() {
 
         status = suchel_execute(tokens);
 
-    } while (status == 0);
+    } while (status != -1);
 }
 
 int main() {
