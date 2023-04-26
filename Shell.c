@@ -113,6 +113,76 @@ void signalHandler_int(int p) {
     }
 }
 
+// char* HandleCommand(char** line){
+//     //iterate char by char the line
+
+//     char newline[MAX_SIZE_CMD];
+//     int a = 0;
+
+
+//     for (int i = 0; line[i] != NULL; i++)
+//     {
+//         bool copied = FALSE;
+//         if ((strcmp(line[i], '>')==TRUE) || (strcmp(line[i], '<')==TRUE) || (strcmp(line[i], '|')==TRUE) || (strcmp(line[i], ';')==TRUE) ||  (strcmp(line[i], '&')==TRUE))
+//         {
+            
+//             if (i>0)
+//             {
+//                 if (strcmp(line[i-1],"")==FALSE)
+//                 {
+//                     newline[a] = " ";
+//                     a++;
+//                     newline[a] = line[i];
+//                     a++;
+//                     copied =  TRUE;
+//                 }
+//             }
+
+//             if (copied == FALSE)
+//             newline[a] = line[i];
+
+//             if (i < sizeof(line) -1)
+//             {
+//                 if ((strcmp(line[i+1], "")==TRUE) ||(strcmp(line[i+1], '>')==TRUE) || (strcmp(line[i+1], '<')==TRUE) || (strcmp(line[i+1], '|')==TRUE) || (strcmp(line[i+1], ';')==TRUE) ||  (strcmp(line[i], '&')==TRUE))
+//                 {
+//                     if ((strcmp(line[i],'>')==TRUE) && (strcmp(line[i+1],'>')==TRUE))
+//                     {
+//                         line[a] = '>';
+//                         i++;
+//                         a++;
+//                         continue;
+//                     }
+
+//                     if ((strcmp(line[i],'|')==TRUE) && (strcmp(line[i+1],'|')==TRUE))
+//                     {
+//                         line[a] = '&';
+//                         i++;
+//                         a++;
+//                         continue;
+//                     }
+
+//                      if ((strcmp(line[i],'&')==TRUE) && (strcmp(line[i+1],'&')==TRUE))
+//                     {
+//                         line[a] = '&';
+//                         i++;
+//                         a++;
+//                         continue;
+//                     }
+
+//                 }
+//                 else{
+//                     newline[a] = " ";
+//                     a++;
+//                 }
+//             }
+//         }
+//         else newline[a] = line[i];
+//     }
+
+//     return newline;
+
+// }
+
 int suchel_cd(char **args);
 
 int suchel_help(char **args);
@@ -386,6 +456,12 @@ int suchel_again(char** command_parts) {
         char* command = (char*) malloc(strlen(history[index-1]) + 1) ;
         strcpy(command, history[index-1]);
 
+        //copy *command into an array
+        char line[MAX_SIZE_CMD];
+        strcpy(line, command);
+
+
+
         // char* command_copy = (char*) malloc(strlen(command) + 1);
         // strcpy(command_copy, command);
 
@@ -400,7 +476,11 @@ int suchel_again(char** command_parts) {
         // strcpy(command_copy1, command_copy);
 
         // if ((tokens[0] = strtok(command_copy, " \n\t")) == NULL) return 0;
-        if ((tokens[0] = strtok(command, " \n\t")) == NULL) return FALSE;
+
+        //char comm[MAX_SIZE_CMD];
+        //strcpy(comm, HandleCommand(line) );
+
+        if ((tokens[0] = strtok(line, " \n\t")) == NULL) return FALSE;
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;
 
@@ -519,7 +599,7 @@ int suchel_launch(char **args, char *inputFile, char *outputFile, int option) {
 
     waitpid(pid, NULL, 0);
 
-    return 0;
+    return TRUE;
 }
 
 int suchel_parsing(char **commands, char **separators, int numCommands, int numSeparators) {
@@ -537,7 +617,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
                     printf("Not enough arguments \n");
-                    return 1;
+                    return FALSE;
                 }
 
                 if (strcmp(separators[currSeparator], ">") == 0) {
@@ -551,7 +631,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
                     printf("Not enough arguments \n");
-                    return 1;
+                    return FALSE;
                 }
 
                 if (separators[currSeparator + 1] != NULL && strcmp(separators[currSeparator + 1], ">") == 0) {
@@ -575,7 +655,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
                 while (commands[i++] != NULL);
                 if (commands[i] == NULL) {
                     printf("Not enough arguments \n");
-                    return 1;
+                    return FALSE;
                 }
 
                 do {
@@ -613,7 +693,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
 
                     if (commands[i] == NULL) {
                         printf("Not enough arguments \n");
-                        return 1;
+                        return FALSE;
                     }
 
                     if (strcmp(separators[currSeparator], ">") == 0) {
@@ -646,6 +726,7 @@ int suchel_parsing(char **commands, char **separators, int numCommands, int numS
     remove(buffer_files[0]);
     remove(buffer_files[1]);
     remove(PIPE_FILE);
+    return TRUE;
 }
 
 
@@ -776,7 +857,7 @@ int suchel_execute(char **args) {
     }
     commands[numCommands] = NULL; // mark end of last command
 
-    suchel_parsing(commands, separators, numCommands, numSeparators);
+    return suchel_parsing(commands, separators, numCommands, numSeparators);
 
     }
 
@@ -784,6 +865,8 @@ int suchel_execute(char **args) {
     free(separators);
     return TRUE;
 }
+
+
 
 void suchel_loop() {
     char line[MAX_SIZE_CMD];
@@ -801,8 +884,12 @@ void suchel_loop() {
 
         fgets(line, MAX_SIZE_CMD, stdin);
         save_history(line);
+
+       //char newline[MAX_SIZE_CMD];
+       //strcpy(newline, HandleCommand(line));
+
+
         line[strcspn(line, "\n")] = 0;
-        
         if ((tokens[0] = strtok(line, " \n\t")) == NULL) continue;
 
         numTokens = 1;
@@ -813,9 +900,12 @@ void suchel_loop() {
     } while (status != -1);
 }
 
+
 int main() {
     load_history_from_txt();
     suchel_loop();
     return EXIT_SUCCESS;
 }
+
+
 

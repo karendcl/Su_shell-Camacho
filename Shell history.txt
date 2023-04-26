@@ -1,20 +1,20 @@
-history
-
 exit
 
+help
+
+help
+
 history
-
-exit
-
-history
-
-ls | grep a
 
 ls | grep a > hola.txt
 
-help > hola.txt
-
 history
+
+ls | grep a > hola.txt
+
+ls | grep a > hola.txt
+
+ls | grep a
 
 exit
 
