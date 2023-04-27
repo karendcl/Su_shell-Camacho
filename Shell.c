@@ -154,9 +154,6 @@ char* replace(char* input, int pos){
     }
     return output;
     
-
-
-
 }
 
 char* parse_again(char* input){
@@ -216,7 +213,7 @@ char* add_spaces(char* input) {
     char* output = (char*) malloc((len+2*separator_count+1)*sizeof(char));  // Allocate space for output string
     int pos = 0;  // Position in output string
     for (int i = 0; i < len; i++) {
-        if (input[i] == '|' || input[i] == '>' || input[i] == '<' || input[i] == '&' || input[i]==';') {  // Found a symbol
+        if (input[i] == '|' || input[i] == '>' || input[i] == '<' || input[i] == '&' || input[i]==';' || input[i]=='#') {  // Found a symbol
             if (input[i] == '>' && i < len-1 && input[i+1] == '>') {  // Found ">>" separator
                 i++;
                 if (pos > 0 && output[pos-1] != ' ') {  // Add space before symbol if needed
@@ -422,6 +419,7 @@ int suchel_if(char**args){
 int suchel_help(char **args) {
 
     //read from help.txt
+    char hh[256] = "h";
      FILE *fp;
     char str[1000];
 
@@ -435,7 +433,6 @@ int suchel_help(char **args) {
         strcpy(command, args[1]);
 
         //concat two strings 
-        char hh[256] = "h";
         strcat(hh, command);
         strcat(hh, ".txt");
 
@@ -447,6 +444,7 @@ int suchel_help(char **args) {
             return FALSE;
         }
 
+    
     while (fgets(str,1000,fp) != NULL) printf("%s", str);
     fclose(fp);
     printf("\n");
@@ -465,7 +463,7 @@ int suchel_history(char **args) {
         printf("%d %s\n", i+1, history[i]);
     }
 
-    return 0;
+    return TRUE;
 }
 
 void load_history_from_array(){
@@ -861,7 +859,16 @@ int suchel_execute(char **args) {
                 k++;
             }
             args2[k] = NULL;
+
+            if (strstr(args1[0],"exit")!=NULL){
+               return -1;
+            }
+
             suchel_execute(args1);
+
+            if (strstr(args2[0],"exit")!=NULL){
+               return -1;
+            }
             suchel_execute(args2);
         }
     }
@@ -890,10 +897,10 @@ int suchel_execute(char **args) {
             }
             args2[k] = NULL;
             int p = suchel_execute(args1);
-            if (p == 0){
+            if (p == TRUE){
                 return suchel_execute(args2);
             }
-            else return 0;
+            else return TRUE;
             
         }
     }
@@ -921,10 +928,10 @@ int suchel_execute(char **args) {
             }
             args2[k] = NULL;
             int p = suchel_execute(args1);
-            if (p !=0){
+            if (p !=TRUE){
                 suchel_execute(args2);
             }
-            else return 0;
+            else return TRUE;
             
         }
     }
