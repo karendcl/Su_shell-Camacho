@@ -113,75 +113,165 @@ void signalHandler_int(int p) {
     }
 }
 
-// char* HandleCommand(char** line){
-//     //iterate char by char the line
+char* replace(char* input, int pos){
+    char* output = (char*) malloc(1024*sizeof(char));
+    int i =0;
+    for ( i = 0; i < pos; i++)
+    {
+        output[i] = input[i];
+    }
+    
+    //get next character after again
+    int j = pos + 5;
+    while (input[j] == ' ' || input[j] == '\t'){
+        j++;
+    }
+    //get the number after again
+    //check if input j is a number
+    if (isdigit(input[j]) == 0){
+        return input;
+    }
+    int k = atoi(&input[j]);
 
-//     char newline[MAX_SIZE_CMD];
-//     int a = 0;
+    //get the command from history
+    if (k > history_count || k < 1){
+        printf("Wrong index\n");
+        return input;
+    }
+    char* command = history[k-1];
+    //copy the command to output
+    for (int i = 0; i < strlen(command); i++)
+    {
+        output[i+pos] = command[i];
+    } 
+    //copy the rest of the input to output
 
 
-//     for (int i = 0; line[i] != NULL; i++)
-//     {
-//         bool copied = FALSE;
-//         if ((strcmp(line[i], '>')==TRUE) || (strcmp(line[i], '<')==TRUE) || (strcmp(line[i], '|')==TRUE) || (strcmp(line[i], ';')==TRUE) ||  (strcmp(line[i], '&')==TRUE))
-//         {
+    
+    for (int k = i+j; k < strlen(input); k++)
+    {
+        output[k] = input[++j];
+    }
+    return output;
+    
+
+
+
+}
+
+char* parse_again(char* input){
+    //replace the word again by history[i]
+    char* output = (char*) malloc(1024*sizeof(char));
+
+    bool found = true;
+    int i =0;
+
+    printf("%s", input);
+
+    if (strlen(input) <= 5){
+        printf("Is returning input\n");
+        return input;
+    }
+    
+    //search for the word again in input
+    for ( i = 0; i < strlen(input)-5; i++)
+    {
+        printf("%c", input[i]);
+        //if the word again starts at input[i]
+        if (input[i] == 'a' && input[i+1] == 'g' && input[i+2] == 'a' && input[i+3] == 'i' && input[i+4] == 'n')
+        {
+            found = true;
+            output = replace(input, i);
+        }
+
+    }
+
+    if (found == false){
+        return input;
+    }
+    return output;
+
+}
+
+char* add_spaces(char* input) {
+    int len = strlen(input);
+    int separator_count = 0;  // Count of separators encountered
+    for (int i = 0; i < len; i++) {
+        if (input[i] == '|' || input[i] == '>' || input[i] == '<' || input[i] == '&' || input[i] == ';') {
+            if (input[i] == '>' && i < len-1 && input[i+1] == '>') {  // Found ">>" separator
+                i++;
+            }
+            if (input[i] == '&' && i < len-1 && input[i+1] == '&') {  // Found && separator
+                i++;
+            }
+            if (input[i] == '|' && i < len-1 && input[i+1] == '|') {  // Found ">>" separator
+                i++;
+            }
+            separator_count++;
+        }
+    }
+    if (separator_count == 0) {  // No separators found, return original string
+        return input;
+    }
+    char* output = (char*) malloc((len+2*separator_count+1)*sizeof(char));  // Allocate space for output string
+    int pos = 0;  // Position in output string
+    for (int i = 0; i < len; i++) {
+        if (input[i] == '|' || input[i] == '>' || input[i] == '<' || input[i] == '&' || input[i]==';') {  // Found a symbol
+            if (input[i] == '>' && i < len-1 && input[i+1] == '>') {  // Found ">>" separator
+                i++;
+                if (pos > 0 && output[pos-1] != ' ') {  // Add space before symbol if needed
+                    output[pos++] = ' ';
+                }
+                output[pos++] = '>';  // Add ">>" symbol to output string
+                output[pos++] = '>';
+                if (i < len-1 && input[i+1] != ' ') {  // Add space after symbol if needed
+                    output[pos++] = ' ';
+                }
+            } 
+             else if (input[i] == '&' && i < len-1 && input[i+1] == '&') {  // Found && separator
+                i++;
+                if (pos > 0 && output[pos-1] != ' ') {  // Add space before symbol if needed
+                    output[pos++] = ' ';
+                }
+                output[pos++] = '&';  // Add && symbol to output string
+                output[pos++] = '&';
+                if (i < len-1 && input[i+1] != ' ') {  // Add space after symbol if needed
+                    output[pos++] = ' ';
+                }
+            }
+            else if (input[i] == '|' && i < len-1 && input[i+1] == '|') {  // Found || separator
+                i++;
+                if (pos > 0 && output[pos-1] != ' ') {  // Add space before symbol if needed
+                    output[pos++] = ' ';
+                }
+                output[pos++] = '|';  // Add || symbol to output string
+                output[pos++] = '|';
+                if (i < len-1 && input[i+1] != ' ') {  // Add space after symbol if needed
+                    output[pos++] = ' ';
+                }
+            }
             
-//             if (i>0)
-//             {
-//                 if (strcmp(line[i-1],"")==FALSE)
-//                 {
-//                     newline[a] = " ";
-//                     a++;
-//                     newline[a] = line[i];
-//                     a++;
-//                     copied =  TRUE;
-//                 }
-//             }
+            else {  // Found a single separator
+                if (pos > 0 && output[pos-1] != ' ') {  // Add space before symbol if needed
+                    output[pos++] = ' ';
+                }
+                output[pos++] = input[i];  // Add symbol to output string
+                if (i < len-1 && input[i+1] != ' ') {  // Add space after symbol if needed
+                    output[pos++] = ' ';
+                }
+            }
+        } else {
+            //if is a space and next is a space, skip
+            if (input[i] == ' ' && input[i-1] == ' '){
+                continue;
+            }
 
-//             if (copied == FALSE)
-//             newline[a] = line[i];
-
-//             if (i < sizeof(line) -1)
-//             {
-//                 if ((strcmp(line[i+1], "")==TRUE) ||(strcmp(line[i+1], '>')==TRUE) || (strcmp(line[i+1], '<')==TRUE) || (strcmp(line[i+1], '|')==TRUE) || (strcmp(line[i+1], ';')==TRUE) ||  (strcmp(line[i], '&')==TRUE))
-//                 {
-//                     if ((strcmp(line[i],'>')==TRUE) && (strcmp(line[i+1],'>')==TRUE))
-//                     {
-//                         line[a] = '>';
-//                         i++;
-//                         a++;
-//                         continue;
-//                     }
-
-//                     if ((strcmp(line[i],'|')==TRUE) && (strcmp(line[i+1],'|')==TRUE))
-//                     {
-//                         line[a] = '&';
-//                         i++;
-//                         a++;
-//                         continue;
-//                     }
-
-//                      if ((strcmp(line[i],'&')==TRUE) && (strcmp(line[i+1],'&')==TRUE))
-//                     {
-//                         line[a] = '&';
-//                         i++;
-//                         a++;
-//                         continue;
-//                     }
-
-//                 }
-//                 else{
-//                     newline[a] = " ";
-//                     a++;
-//                 }
-//             }
-//         }
-//         else newline[a] = line[i];
-//     }
-
-//     return newline;
-
-// }
+            output[pos++] = input[i];  // Copy character to output string
+        }
+    }
+    output[pos] = '\0';  // Add null terminator to output string
+    return output;
+} 
 
 int suchel_cd(char **args);
 
@@ -449,6 +539,11 @@ void save_history(char* command) {
 }
 
 int suchel_again(char** command_parts) {
+    if (command_parts[1] == NULL) {
+        printf("Error: again command requires an index\n");
+        return FALSE;
+    }
+
     int index = atoi(command_parts[1]);
     int numTokens = 0;
 
@@ -870,6 +965,8 @@ int suchel_execute(char **args) {
 
 void suchel_loop() {
     char line[MAX_SIZE_CMD];
+    char *newline;
+    char *temp;
     char *tokens[MAX_SIZE_CMD];
     int numTokens;
     int status = TRUE;
@@ -883,14 +980,20 @@ void suchel_loop() {
         memset(line, '\0', MAX_SIZE_CMD);
 
         fgets(line, MAX_SIZE_CMD, stdin);
-        save_history(line);
 
-       //char newline[MAX_SIZE_CMD];
-       //strcpy(newline, HandleCommand(line));
+        
+
+        temp = add_spaces(line);
+        //temp = parse_again(temp);
 
 
-        line[strcspn(line, "\n")] = 0;
-        if ((tokens[0] = strtok(line, " \n\t")) == NULL) continue;
+
+        save_history(temp);
+
+        //printf("%s\n", temp);
+
+        temp[strcspn(temp, "\n")] = 0;
+        if ((tokens[0] = strtok(temp, " \n\t")) == NULL) continue;
 
         numTokens = 1;
         while ((tokens[numTokens] = strtok(NULL, " \n\t")) != NULL) numTokens++;

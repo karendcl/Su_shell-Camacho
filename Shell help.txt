@@ -6,6 +6,7 @@ Luis Alejandro Rodríguez Otero C-311
 funcionalidades:
 ----------------
 basic 3pts
+multiple spaces 0.5pts
 history 0.5pts
 chain 0.5pts
 if 1pt
@@ -13,12 +14,12 @@ multiple ifs 0.5
 help 1pt
 multipiping 1pt
 
-total: 7.5pts
+total: 8pts
 
 Built-In Commands:
 ------------------
 help: Muestra este texto.
-exit: Termina la ejecucuión del programa.
+exit: Termina la ejecuión del programa.
 cd: Cambia el directorio actual del Shell.
 true: Devuelve 0.
 false: Devuelve 1.
