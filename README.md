@@ -17,12 +17,19 @@ Luis Alejandro Rodríguez Otero C-311
 funcionalidades:
 ----------------
 basic 3pts
+
 multiple spaces 0.5pts
+
 history/again 0.5pts
+
 chain 0.5pts
+
 if 1pt
+
 multiple ifs 0.5
+
 help 1pt
+
 multipiping 1pt
 
 total: 8pts
