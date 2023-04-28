@@ -58,7 +58,7 @@ if then else end: Permite ejecutar expresiones booleanas.
 
 multi-if: Permite que el cuerpo de un if sea otro cuerpo if then else end.
 
-Para ver mas info se pueden ejecutar los siguientes comandos en el proyecto:
+Para ver mas información sobre cómo están implementadas las funcionalidades se pueden ejecutar los siguientes comandos dentro de Su_shell Camacho:
 ------------------
 help cd
 
