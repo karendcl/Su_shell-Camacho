@@ -900,7 +900,7 @@ int suchel_execute(char **args) {
             if (p == TRUE){
                 return suchel_execute(args2);
             }
-            else return TRUE;
+            else return p;
             
         }
     }
